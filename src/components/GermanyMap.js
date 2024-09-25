@@ -1,6 +1,4 @@
-// AIzaSyCwjaukgG10qGC6V_qNwCFjsQGg5kC8RT0
-
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { GoogleMap, LoadScript, Circle, InfoWindow, Marker } from '@react-google-maps/api';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchJobs } from '../store/jobActions';
@@ -17,7 +15,7 @@ const center = {
 
 const zoom = 6;
 
-const GermanyMap = ({ onJobSelect }) => {
+const GermanyMap = ({ onJobSelect, showRemoteOnly, searchCity }) => {
   const dispatch = useDispatch();
   const jobs = useSelector((state) => state.job.jobs);
   const loading = useSelector((state) => state.job.loading);
@@ -33,15 +31,22 @@ const GermanyMap = ({ onJobSelect }) => {
   useEffect(() => {
     const counts = {};
     jobs.forEach(job => {
-      if (job.location) {
+      if (
+        job.location &&
+        (!showRemoteOnly || job.remote) &&
+        (!searchCity.name || job.location === searchCity.name)
+      ) {
         counts[job.location] = (counts[job.location] || 0) + 1;
       }
     });
     setJobCountsByCity(counts);
-  }, [jobs]);
+  }, [jobs, showRemoteOnly, searchCity]);
 
   const handleCircleClick = (cityJobs, city) => {
-    onJobSelect(cityJobs);
+    const filteredCityJobs = showRemoteOnly
+      ? cityJobs.filter(job => job.remote)
+      : cityJobs;
+    onJobSelect(filteredCityJobs);
     setActiveCity(city); // Set active city for InfoWindow display
   };
 
@@ -51,11 +56,16 @@ const GermanyMap = ({ onJobSelect }) => {
 
   if (loading) return <p>Loading job data...</p>;
   if (error) return <p>Error: {error}</p>;
+
   return (
     <LoadScript googleMapsApiKey="AIzaSyCwjaukgG10qGC6V_qNwCFjsQGg5kC8RT0">
-      <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={zoom}>
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={searchCity.lat ? { lat: searchCity.lat, lng: searchCity.lng } : center}
+        zoom={searchCity.lat ? 10 : zoom}
+      >
         {Object.keys(jobCountsByCity).map((city, idx) => {
-          const cityJobs = jobs.filter(job => job.location === city); 
+          const cityJobs = jobs.filter(job => job.location === city && (!showRemoteOnly || job.remote)); 
           const firstJob = cityJobs[0]; 
   
           return (
@@ -63,7 +73,7 @@ const GermanyMap = ({ onJobSelect }) => {
               <React.Fragment key={idx}>
                 <Circle
                   center={{ lat: firstJob.latitude, lng: firstJob.longitude }}
-                  radius={10000} // Increase radius for larger circles
+                  radius={10000}
                   options={{
                     strokeColor: '#00f',
                     strokeOpacity: 0.8,
@@ -77,13 +87,13 @@ const GermanyMap = ({ onJobSelect }) => {
                   position={{ lat: firstJob.latitude, lng: firstJob.longitude }}
                   label={{
                     text: jobCountsByCity[city].toString(),
-                    color: "#FFFFFF", // Set label color
-                    fontWeight: "bold", // Set label font weight
-                    fontSize: "14px", // Set label font size
+                    color: "#FFFFFF",
+                    fontWeight: "bold",
+                    fontSize: "14px",
                   }}
-                  onClick={() => handleCircleClick(cityJobs, city)} // Optional: make the marker clickable
+                  onClick={() => handleCircleClick(cityJobs, city)}
                 />
-                {activeCity === city && ( // Show InfoWindow only for the active city
+                {activeCity === city && (
                   <InfoWindow
                     position={{ lat: firstJob.latitude, lng: firstJob.longitude }}
                     onCloseClick={handleInfoWindowClose}
@@ -101,7 +111,6 @@ const GermanyMap = ({ onJobSelect }) => {
       </GoogleMap>
     </LoadScript>
   );
-  
 };
 
 export default GermanyMap;

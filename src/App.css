@@ -28,6 +28,21 @@
   color: #61dafb;
 }
 
+/* App.css or inline styles */
+#search-container {
+  position: absolute;
+  top: 10px; /* Adjust the top position as per your design */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000; /* Ensure it has a higher z-index than the map */
+  background-color: white; /* Optional: Background for better visibility */
+  padding: 10px; /* Optional: Padding for better aesthetics */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Shadow for aesthetics */
+  border-radius: 5px; /* Optional: Rounded corners */
+  width: 300px; /* Adjust width as needed */
+}
+
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -36,3 +51,4 @@
     transform: rotate(360deg);
   }
 }
+
