@@ -1,14 +1,18 @@
 import React from 'react';
 import { Card, CardContent, Typography, Button } from '@mui/material';
+import { useSelector } from 'react-redux';
 
-const JobList = ({ selectedJobs }) => {
+const JobList = () => {
+  const { selectedJobs=[] } = useSelector((state) => state.job);
+
   return (
     <div
-      style={{
-        width: '300px', // Fixed width for the job list
-        marginLeft: '20px', // Some spacing between the map and job list
-        marginTop: '20px',
-      }}
+    className='w-[300px] ml-[20px] mt-[20px] h-screen overflow-y-scroll'
+      // style={{
+      //   width: '300px',
+      //   marginLeft: '20px', 
+      //   marginTop: '20px',
+      // }}
     >
       {selectedJobs.length > 0 ? (
         selectedJobs.map((job, idx) => (

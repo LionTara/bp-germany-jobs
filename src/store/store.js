@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
-import jobReducer from './reducers/jobReducer'; // Import your job reducer
+import JobsSlice from './jobs/JobsSlice'; 
+import MapSlice from './map/MapSlice';
 
 const store = configureStore({
   reducer: {
-    job: jobReducer, // Combine your reducers here
-  },
+    job: JobsSlice, 
+    map:MapSlice
+  }
 });
 
 export default store;
