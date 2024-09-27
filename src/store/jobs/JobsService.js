@@ -1,10 +1,9 @@
-import {  createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// Define the async thunk for fetching jobs
 export const fetchJobs = createAsyncThunk('jobs/fetchJobs', async () => {
   const response = await axios.get('https://www.arbeitnow.com/api/job-board-api');
-  const jobs = response.data.data.filter(job => job.location); // Only jobs with locations
+  const jobs = response.data.data.filter(job => job.location);
 
   const geocodedJobs = await Promise.all(jobs.map(async (job) => {
     try {

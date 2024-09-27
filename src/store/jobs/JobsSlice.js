@@ -7,23 +7,21 @@ const jobsSlice = createSlice({
     jobs: [],
     selectedJobs: [],
     showRemoteOnly: false,
-    searchCity: '', // For holding search input
+    searchCity: '',
     status: 'idle',
     error: null,
   },
   reducers: {
     toggleRemoteOnly: (state) => {
       state.showRemoteOnly = !state.showRemoteOnly;
-      // Filter the selected jobs if the toggle is turned on
-      state.selectedJobs = state.showRemoteOnly 
-        ? state.jobs.filter((job) => job.remote) 
+      state.selectedJobs = state.showRemoteOnly
+        ? state.jobs.filter((job) => job.remote)
         : state.jobs;
     },
     setSelectedJobs: (state, action) => {
       const jobs = action.payload;
-      // Filter the jobs based on the showRemoteOnly toggle
-      state.selectedJobs = state.showRemoteOnly 
-        ? jobs.filter((job) => job.remote) 
+      state.selectedJobs = state.showRemoteOnly
+        ? jobs.filter((job) => job.remote)
         : jobs;
     },
     setSearchCity: (state, action) => {
@@ -38,7 +36,7 @@ const jobsSlice = createSlice({
       .addCase(fetchJobs.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.jobs = action.payload;
-        state.selectedJobs = state.showRemoteOnly 
+        state.selectedJobs = state.showRemoteOnly
           ? action.payload.filter((job) => job.remote)
           : action.payload;
       })

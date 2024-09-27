@@ -1,14 +1,13 @@
 import React, { useMemo, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { setSelectedJobs } from "../store/jobs/JobsSlice"
-import {  Circle, InfoWindow, Marker } from '@react-google-maps/api';
+import { InfoWindow, Marker, MarkerClusterer } from '@react-google-maps/api';
 
 const Markers = () => {
   const { jobs, showRemoteOnly, searchCity } = useSelector((state) => state.job)
   const dispatch = useDispatch()
   const [activeCity, setActiveCity] = useState(null)
 
-  // Calculate job counts for each city, based on filters
   const jobCountsByCity = useMemo(() => {
     const counts = {}
     jobs.forEach((job) => {
@@ -24,11 +23,10 @@ const Markers = () => {
   }, [jobs, showRemoteOnly, searchCity])
 
   const handleCircleClick = (cityJobs, city) => {
-    // Filter city jobs by remote setting
     const filteredCityJobs = showRemoteOnly
       ? cityJobs.filter((job) => job.remote)
       : cityJobs
-    dispatch(setSelectedJobs(filteredCityJobs)) // Dispatch selected jobs to Redux store
+    dispatch(setSelectedJobs(filteredCityJobs))
     setActiveCity(city)
   }
 
@@ -37,66 +35,58 @@ const Markers = () => {
   }
 
   return (
-    <>
-      {Object.keys(jobCountsByCity).map((city, idx) => {
-        const cityJobs = jobs.filter(
-          (job) => job.location === city && (!showRemoteOnly || job.remote)
-        )
-        const firstJob = cityJobs[0]
+    <MarkerClusterer>
+      {(clusterer) =>
+        Object.keys(jobCountsByCity).map((city, idx) => {
+          const cityJobs = jobs.filter(
+            (job) => job.location === city && (!showRemoteOnly || job.remote)
+          );
+          const firstJob = cityJobs[0];
 
-        return (
-          firstJob &&
-          firstJob.latitude &&
-          firstJob.longitude && (
-            <React.Fragment key={idx}>
-              <Circle
-                center={{
-                  lat: firstJob.latitude,
-                  lng: firstJob.longitude,
-                }}
-                radius={10000}
-                options={{
-                  strokeColor: "#00f",
-                  strokeOpacity: 0.8,
-                  strokeWeight: 2,
-                  fillColor: "#00f",
-                  fillOpacity: 0.35,
-                }}
-                onClick={() => handleCircleClick(cityJobs, city)}
-              />
-              <Marker
-                position={{
-                  lat: firstJob.latitude,
-                  lng: firstJob.longitude,
-                }}
-                label={{
-                  text: jobCountsByCity[city].toString(),
-                  color: "#FFFFFF",
-                  fontWeight: "bold",
-                  fontSize: "14px",
-                }}
-                onClick={() => handleCircleClick(cityJobs, city)}
-              />
-              {activeCity === city && (
-                <InfoWindow
+          return (
+            firstJob &&
+            firstJob.latitude &&
+            firstJob.longitude && (
+              <React.Fragment key={idx}>
+                <Marker
                   position={{
                     lat: firstJob.latitude,
                     lng: firstJob.longitude,
                   }}
-                  onCloseClick={handleInfoWindowClose}
-                >
-                  <div>
-                    <h4>{city}</h4>
-                    <p>{jobCountsByCity[city]} opened position(s)</p>
-                  </div>
-                </InfoWindow>
-              )}
-            </React.Fragment>
-          )
-        )
-      })}
-    </>
-  )
-}
+                  label={{
+                    text: jobCountsByCity[city].toString(),
+                    color: "#FFFFFF",
+                    fontWeight: "bold",
+                    fontSize: "14px",
+                  }}
+                  icon={{
+                    url: "data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%231976d2' stroke='%23FFFFFF' stroke-width='2'/></svg>",
+                    scaledSize: new window.google.maps.Size(40, 40),
+                  }}
+                  clusterer={clusterer}
+                  onClick={() => handleCircleClick(cityJobs, city)}
+                />
+                {activeCity === city && (
+                  <InfoWindow
+                    position={{
+                      lat: firstJob.latitude,
+                      lng: firstJob.longitude,
+                    }}
+                    onCloseClick={handleInfoWindowClose}
+                  >
+                    <div>
+                      <h4>{city}</h4>
+                      <p>{jobCountsByCity[city]} opened position(s)</p>
+                    </div>
+                  </InfoWindow>
+                )}
+              </React.Fragment>
+            )
+          );
+        })
+      }
+    </MarkerClusterer>
+  );
+};
 
 export default Markers

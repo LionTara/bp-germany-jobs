@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-// Initial state
 const initialState = {
   mapCenter: {
     lat: 51.1657,
@@ -10,7 +9,6 @@ const initialState = {
   searchCity: '',
 };
 
-// Slice definition
 const searchSlice = createSlice({
   name: 'search',
   initialState,
@@ -18,7 +16,7 @@ const searchSlice = createSlice({
     setMapOptions: (state, action) => {
       const { lat, lng, zoom } = action.payload;
       state.mapCenter = { lat, lng };
-      state.zoom = zoom || 10;
+      state.zoom = zoom;
     },
     resetMap: (state) => {
       state.mapCenter = initialState.mapCenter;

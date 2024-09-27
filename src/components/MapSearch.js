@@ -17,7 +17,7 @@ const MapSearch = () => {
     clearSuggestions,
   } = usePlacesAutocomplete({
     requestOptions: {
-      componentRestrictions: { country: "de" }, // Restrict to Germany
+      componentRestrictions: { country: "de" },
     },
     debounce: 300,
   });
@@ -30,13 +30,12 @@ const MapSearch = () => {
   };
 
 
-  // Handle location selection
   const handleSelect = async (description) => {
     try {
       const results = await getGeocode({ address: description });
-      const { lat, lng } = await getLatLng(results[0]); 
-      dispatch(setMapOptions({ lat, lng, description ,zoom:10}));
-      clearSuggestions(); 
+      const { lat, lng } = await getLatLng(results[0]);
+      dispatch(setMapOptions({ lat, lng, description, zoom: 10 }));
+      clearSuggestions();
     } catch (error) {
       console.error("Error fetching geocode:", error);
     }
@@ -47,7 +46,7 @@ const MapSearch = () => {
     return (
       <div
         key={location.place_id}
-        onClick={() => handleSelect(location.description)} 
+        onClick={() => handleSelect(location.description)}
         className="cursor-pointer flex bg-white p-4 hover:bg-gray-200 dark:bg-[var(--brand-color)] z-[999999]"
       >
         {location.description}
@@ -74,9 +73,8 @@ const MapSearch = () => {
   return (
     <div className="absolute z-[99999] top-1 flex w-full justify-center">
       <div
-        className={`relative ml-3 mr-5 mt-6 h-[45px] w-full bg-white md:w-[50%] ${
-          showDropdown ? "rounded-t-lg" : "rounded-xl"
-        } shadow-xl md:-translate-x-[20px]`}
+        className={`relative ml-3 mr-5 mt-6 h-[45px] w-full bg-white md:w-[50%] ${showDropdown ? "rounded-t-lg" : "rounded-xl"
+          } shadow-xl md:-translate-x-[20px]`}
       >
         <div className="absolute flex h-full items-center">
           <div className="ml-5 flex h-full items-center">
@@ -90,11 +88,9 @@ const MapSearch = () => {
           onFocus={() => setFocused(true)}
           value={value}
           onChange={handleSearchChange}
-          className={`h-full w-full pl-[70px] text-lg outline-none ${
-            showDropdown ? "rounded-t-lg" : "rounded-lg"
-          } bg-white transition-colors duration-300 focus:bg-slate-50 `}
+          className={`h-full w-full pl-[70px] text-lg outline-none ${showDropdown ? "rounded-t-lg" : "rounded-lg"
+            } bg-white transition-colors duration-300 focus:bg-slate-50 `}
           placeholder="Find a Plug..."
-          // disabled={!ready} // Disable input until the API is ready
         />
         {showDropdown && (
           <div className="absolute max-h-[300px] w-full overflow-y-auto rounded-b-lg bg-white  z-[9999999]">
