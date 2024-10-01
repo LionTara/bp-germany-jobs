@@ -31,5 +31,8 @@ module.exports = {
         version: 'detect',
       },
     },
+    globals: {
+      google: "readonly"
+    }
   };
   

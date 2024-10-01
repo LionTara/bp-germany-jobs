@@ -31,9 +31,11 @@ const jobsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchJobs.pending, (state) => {
+        console.log('Fetching jobs started...');
         state.status = 'loading';
       })
       .addCase(fetchJobs.fulfilled, (state, action) => {
+        console.log('Fetching jobs succeeded:', action.payload);
         state.status = 'succeeded';
         state.jobs = action.payload;
         state.selectedJobs = state.showRemoteOnly
@@ -41,6 +43,7 @@ const jobsSlice = createSlice({
           : action.payload;
       })
       .addCase(fetchJobs.rejected, (state, action) => {
+        console.error('Fetching jobs failed:', action.error.message);
         state.status = 'failed';
         state.error = action.error.message;
       });
